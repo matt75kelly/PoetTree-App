@@ -14,12 +14,18 @@
     "sequelize": "^4.38.0"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^5.2.0"
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.2",
+    "mocha": "^5.2.0",
+    "prettier": "^1.13.7"
   },
   "scripts": {
     "debug": "mocha",
-    "test": "npm run lint",
+    "test": "npm run lint && NODE_ENV=test mocha -u tdd --reporter spec --exit",
+    "fix": "eslint --fix .",
     "lint": "eslint **/*.js --quiet",
     "start": "node server.js"
   },
