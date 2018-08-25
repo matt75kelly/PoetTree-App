@@ -1,7 +1,7 @@
 {
   "name": "project-2",
   "version": "1.0.0",
-  "description": "Project #2 for KU Coding Bootcamp",
+  "description": "Social Platform for Poetry Enthusiasts",
   "main": "server.js",
   "dependencies": {
     "body-parser": "^1.18.3",
@@ -13,16 +13,19 @@
     "path": "^0.12.7",
     "sequelize": "^4.38.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^5.2.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/matt75kelly/Project-2.git"
   },
-  "author": "",
+  "author": "Matthew Kelly & Rachael Spears",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/matt75kelly/Project-2/issues"
