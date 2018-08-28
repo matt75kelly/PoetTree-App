@@ -30,17 +30,22 @@ module.exports = function(app) {
     });
   });
   // Route for Pulling a Single Poem
+  // This may need to go into the html routes?
   app.get("/api/poems/:poemTitle/:poemAuthor", (req,res)=>{
     let searchQuery = ``;
     let queries = ``;
     let url = `${process.env.API_BASE_URL}/${searchQuery}/${queries}`;
     request(url, (err, response)=>{
       if(err || response.statusCode !== 200){
-        throw new Error(`Could not retrieve Poem: ${err}`);
+        throw new Error(`Could not retrieve Poem from API: ${err}`);
       }
       else{
-        res.status(200);
-        res.json(response[0]);
+        db.Poems.create(response[0]).catch(err=>{
+          throw new Error(`Could not save Poem: ${err}`);
+        }).then(result=>{
+          res.status(200);
+          res.json();
+        });
       }
     })
   })
