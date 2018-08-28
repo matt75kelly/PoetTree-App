@@ -1,8 +1,30 @@
 {
-  "name": "project-2",
+  "name": "poettree-app",
   "version": "1.0.0",
-  "description": "Social Platform for Poetry Enthusiasts",
+  "description": "Project #2 for KU Coding Bootcamp",
   "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matt75kelly/PoetTree-App.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matt75kelly/PoetTree-App/issues"
+  },
+  "homepage": "https://github.com/matt75kelly/PoetTree-App#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
+    "mocha": "^5.2.0"
+  },
   "dependencies": {
     "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
@@ -11,32 +33,7 @@
     "mysql": "^2.16.0",
     "mysql2": "^1.6.1",
     "path": "^0.12.7",
+    "request": "^2.88.0",
     "sequelize": "^4.38.0"
-  },
-  "devDependencies": {
-    "chai": "^4.1.2",
-    "chai-http": "^4.0.0",
-    "eslint": "^4.19.1",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.6.2",
-    "mocha": "^5.2.0",
-    "prettier": "^1.13.7"
-  },
-  "scripts": {
-    "debug": "mocha",
-    "test": "npm run lint && NODE_ENV=test mocha -u tdd --reporter spec --exit",
-    "fix": "eslint --fix .",
-    "lint": "eslint **/*.js --quiet",
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/matt75kelly/Project-2.git"
-  },
-  "author": "Matthew Kelly & Rachael Spears",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/matt75kelly/Project-2/issues"
-  },
-  "homepage": "https://github.com/matt75kelly/Project-2#readme"
+  }
 }
