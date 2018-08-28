@@ -1,11 +1,49 @@
+require("dotenv");
 var db = require("../models");
 const request = require("request");
 
 module.exports = function(app) {
-  // Route for Poem retrieval
-  app.get("/api/poems/:poemTitle?/:poemAuthor?/:poemQuery", (req, res)=>{
+  // Route for Poem Search List
+  app.get("/api/poems/:poemQuery/:poemTitle?/:poemAuthor?", (req, res)=>{
+    let searchQuery = `/lines`;
+    let queries = `${req.params.poemQuery}`;
+    let urlTrailer = `/author,title`;
 
+    if(req.params.poemAuthor){
+      searchQuery += `,author`;
+      queries += `;${req.params.poemAuthor}`;
+    }
+    if(req.params.poemTitle){
+      searchQuery += `,title`;
+      queries += `;${req.params.poemTitle}`;
+    }
+    let url = `${process.env.API_BASE_URL}/${searchQuery}/${queries}/${urlTrailer}`;
+    console.log(`API URL: ${url}`);
+    request(url, (err, response)=>{
+      if(err || response.statusCode !== 200){
+        throw new Error(`Could not retrieve Poem Search Results: ${err}`);
+      }
+      else{
+        res.status(200);
+        res.json(response);
+      }
+    });
   });
+  // Route for Pulling a Single Poem
+  app.get("/api/poems/:poemTitle/:poemAuthor", (req,res)=>{
+    let searchQuery = ``;
+    let queries = ``;
+    let url = `${process.env.API_BASE_URL}/${searchQuery}/${queries}`;
+    request(url, (err, response)=>{
+      if(err || response.statusCode !== 200){
+        throw new Error(`Could not retrieve Poem: ${err}`);
+      }
+      else{
+        res.status(200);
+        res.json(response[0]);
+      }
+    })
+  })
   // Route for Creating New User Profiles
   app.post("/api/users", (req, res)=>{
     db.Users.findOrCreate({
