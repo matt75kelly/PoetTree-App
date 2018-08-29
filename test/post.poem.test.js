@@ -58,7 +58,11 @@ describe("POST /api/:userID/favorite", function() {
 
         expect(responseBody)
           .to.be.an("object")
-          .that.includes(reqBody);
+          .that.includes({
+            title: reqBody.title,
+            author: reqBody.author,
+            lines: reqBody.lines.join(" ")
+    });
 
         // The `done` function is used to end any asynchronous tests
         done();

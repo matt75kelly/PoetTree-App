@@ -23,17 +23,14 @@ describe("POST /api/:userID/favorite", function() {
       poem_title: "Example_Poem",
       poem_author: "Poem Example",
     };
-    // POST a user to attatch the favorite to
-    request
-      .post("/api/users")
-      .send({
-          username: "Example_User",
-          email: "exampleUser@gmail.com"
-      })
-      .end(function(err, response){
+      db.Users.bulkCreate([
+        {
+          email: "example_user@email.com",
+          username: "Example_User"
+      }]);
     // POST the request body to the server
     request
-      .post(`/api/${response.id}/favorite`)
+      .post(`/api/1/favorite`)
       .send(reqBody)
       .end(function(err, res) {
         var responseStatus = res.status;
@@ -54,4 +51,3 @@ describe("POST /api/:userID/favorite", function() {
       });
     });
   });
-});
