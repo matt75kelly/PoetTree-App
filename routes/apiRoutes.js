@@ -5,9 +5,9 @@ const request = require("request");
 module.exports = function(app) {
   // Route for Poem Search List
   app.get("/api/poems/:poemQuery/:poemTitle?/:poemAuthor?", (req, res)=>{
-    let searchQuery = `/lines`;
+    let searchQuery = `lines`;
     let queries = `${req.params.poemQuery}`;
-    let urlTrailer = `/author,title`;
+    let urlTrailer = `author,title`;
 
     if(req.params.poemAuthor){
       searchQuery += `,author`;
@@ -24,27 +24,40 @@ module.exports = function(app) {
         throw new Error(`Could not retrieve Poem Search Results: ${err}`);
       }
       else{
+        let results = JSON.parse(response.body);
         res.status(200);
-        res.json(response);
+        res.json(results);
       }
     });
   });
   // Route for Pulling a Single Poem
   // This may need to go into the html routes?
-  app.get("/api/poems/:poemTitle/:poemAuthor", (req,res)=>{
-    let searchQuery = ``;
-    let queries = ``;
+  app.get("/api/poem/:poemTitle/:poemAuthor", (req,res)=>{
+    let searchQuery = `title,author`;
+    let queries = `${req.params.poemTitle};${req.params.poemAuthor}`;
     let url = `${process.env.API_BASE_URL}/${searchQuery}/${queries}`;
     request(url, (err, response)=>{
       if(err || response.statusCode !== 200){
         throw new Error(`Could not retrieve Poem from API: ${err}`);
       }
       else{
-        db.Poems.create(response[0]).catch(err=>{
-          throw new Error(`Could not save Poem: ${err}`);
-        }).then(result=>{
-          res.status(200);
-          res.json();
+        let poem = JSON.parse(response.body);
+        db.Poems.findOrCreate({
+          where: {
+            title: poem[0].title,
+            author: poem[0].author
+          },
+          defaults: {
+            lines: poem[0].lines.join(" ")
+          }
+        }).spread((sonnet, created)=>{
+          if(created){
+            console.log("New Poem added to Database");
+          }
+            res.status(200);
+            res.json(sonnet);
+        }).catch(err=>{
+          throw new Error(`Error Creating New User: ${err}`);
         });
       }
     })
@@ -72,13 +85,15 @@ module.exports = function(app) {
   });
   // Route for Creating New Favorite for a User Profile
   app.post("/api/:userID/favorite", (req, res)=>{
+    console.log(req.params.userID);
+    console.log(req.body);
     let newFavorite = {
-      poem_title: req.body.poemTitle,
-      poem_author: req.body.poemAuthor,
-      UsersId: req.params.userID
+      poem_title: req.body.poem_title,
+      poem_author: req.body.poem_author,
+      UserId: req.params.userID
     };
     db.Favorites.create(newFavorite).catch(err=>{
-      throw new Error(`\nCannout add to Favorites List: ${err}`);
+      throw new Error(`\nCannot add to Favorites List: ${err}`);
     }).then((result)=>{
       console.log(result);
       res.json(result);
@@ -97,8 +112,8 @@ module.exports = function(app) {
     }).then(result=>{
       let newRating ={
       rating: req.body.rating,
-      UsersId: req.params.userID,
-      PoemsId: result.id
+      UserId: req.params.userID,
+      PoemId: result.id
     };
     db.Ratings.create(newRating).catch(err=>{
       throw new Error(`\nCouldn't Save New Rating for ${req.params.poemTitle}: ${err}`);
@@ -121,8 +136,8 @@ module.exports = function(app) {
     }).then(result=>{
       let newComment = {
         comment_body: res.body.comment,
-        PoemsId: result.id,
-        UsersId: req.params.userID, 
+        PoemId: result.id,
+        UserId: req.params.userID, 
         is_private: res.body.private
       };
       db.Comments.create(newComment).catch(err=>{

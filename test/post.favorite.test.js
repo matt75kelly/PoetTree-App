@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 
 var request;
 
-describe("GET /api/examples", function() {
+describe("POST /api/:userID/favorite", function() {
   // Before each test begins, create a new request server for testing
   // & delete all examples from the db
   beforeEach(function() {
@@ -17,14 +17,25 @@ describe("GET /api/examples", function() {
     return db.sequelize.sync({ force: true });
   });
 
-  it("should find all examples", function(done) {
-    // Add some examples to the db to test with
-    db.Example.bulkCreate([
-      { text: "First Example", description: "First Description" },
-      { text: "Second Example", description: "Second Description" }
-    ]).then(function() {
-      // Request the route that returns all examples
-      request.get("/api/examples").end(function(err, res) {
+  it("should save a user's favorite", function(done) {
+    // Create an object to send to the endpoint
+    var reqBody = {
+      poem_title: "Example_Poem",
+      poem_author: "Poem Example",
+    };
+    // POST a user to attatch the favorite to
+    request
+      .post("/api/users")
+      .send({
+          username: "Example_User",
+          email: "exampleUser@gmail.com"
+      })
+      .end(function(err, response){
+    // POST the request body to the server
+    request
+      .post(`/api/${response.id}/favorite`)
+      .send(reqBody)
+      .end(function(err, res) {
         var responseStatus = res.status;
         var responseBody = res.body;
 
@@ -35,16 +46,8 @@ describe("GET /api/examples", function() {
         expect(responseStatus).to.equal(200);
 
         expect(responseBody)
-          .to.be.an("array")
-          .that.has.lengthOf(2);
-
-        expect(responseBody[0])
           .to.be.an("object")
-          .that.includes({ text: "First Example", description: "First Description" });
-
-        expect(responseBody[1])
-          .to.be.an("object")
-          .that.includes({ text: "Second Example", description: "Second Description" });
+          .that.includes(reqBody);
 
         // The `done` function is used to end any asynchronous tests
         done();
