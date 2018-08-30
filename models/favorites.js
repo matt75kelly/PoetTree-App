@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes){
     // Needs Associations:
     // Many Favorites belongs to One User
     Favorites.associate = function(models) {
-        Favorites.belongsTo(models.User, {
+        Favorites.belongsTo(models.Users, {
             foreignKey:{
                 allowNull: false
             }

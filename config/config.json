@@ -8,9 +8,9 @@
   },
   "test": {
     "username": "root",
-    "password": null,
+    "password": "vPjrS6%29w,",
     "database": "database_test",
-    "host": "127.0.0.1",
+    "host": "localhost",
     "dialect": "mysql"
   },
   "production": {

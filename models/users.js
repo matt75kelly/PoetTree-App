@@ -1,11 +1,20 @@
 module.exports = function(sequelize, DataTypes) {
-    var Users = sequelize.define("User",{
-        user_name : {
+    var Users = sequelize.define("Users",{
+        username: {
             type: DataTypes.STRING,
             allowNull: false,
             validations: {
                 len: [1, 254],
                 notEmpty: true
+            }
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validations: {
+                len: [1, 254],
+                notEmpty: true,
+                isEmail: true
             }
         }
     })
@@ -14,7 +23,7 @@ module.exports = function(sequelize, DataTypes) {
     // One User to many Ratings
     // One User to many Comments
     Users.associate = function(models) {
-        User.hasMany(models.Favorites, {
+        Users.hasMany(models.Favorites, {
             as: "favorites",
             onDelete: "cascade"
         });

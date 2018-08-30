@@ -1,6 +1,6 @@
 module.exports = function(sequelize, DataTypes){
     var Poems = sequelize.define("Poems", {
-        poem_title: {
+        title: {
             type: DataTypes.STRING,
             allowNull: false,
             validations: {
@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes){
                 len: [1, 254]
             }
         },
-        poem_author: {
+        author: {
             type: DataTypes.STRING,
             allowNull: true,
             validations: {
@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes){
                 len: [1, 254]
             }
         },
-        poem_body: {
+        poem_lines: {
             type: DataTypes.TEXT,
             allowNull: false,
             validations: {
