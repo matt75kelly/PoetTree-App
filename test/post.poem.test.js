@@ -61,7 +61,7 @@ describe("POST /api/:userID/favorite", function() {
           .that.includes({
             title: reqBody.title,
             author: reqBody.author,
-            lines: reqBody.lines.join(" ")
+            poem_lines: reqBody.lines.join(" ")
     });
 
         // The `done` function is used to end any asynchronous tests

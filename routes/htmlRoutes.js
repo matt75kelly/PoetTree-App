@@ -3,25 +3,68 @@ var db = require("../models");
 module.exports = function(app) {
   // Load index page
   app.get("/", function(req, res) {
-    db.Example.findAll({}).then(function(dbExamples) {
-      res.render("index", {
-        msg: "Welcome!",
-        examples: dbExamples
+    res.status(200);
+    res.send("index.html");
+  });
+  
+  app.get("/:username", (req, res)=>{
+    db.Users.findOne({
+      where: {
+        username: req.params.username
+      }
+    }).then(result=>{
+      console.log(result);
+      res.status(200);
+      res.render("userProfile",{
+        result
       });
+    }).catch(err=>{
+      res.status(404);
+      throw new Error(`Can't Find User with username ${req.params.username}: ${err}`);
+    })
+  });
+  app.get("/api/:userID/favorites", (req, res)=>{
+    db.Favorites.findAll({
+      attributes: ["poem_title", "poem_author"],
+      where: {
+        UserId: req.params.userID,
+      },
+    }).then(function(results){
+      res.status(200);
+      res.json(results);
+    }).catch(err=>{
+      throw new Error(``);
     });
   });
 
-  // Load example page and pass in an example by id
-  app.get("/example/:id", function(req, res) {
-    db.Example.findOne({ where: { id: req.params.id } }).then(function(dbExample) {
-      res.render("example", {
-        example: dbExample
-      });
+  app.get("/api/:userID/ratings", (req, res)=>{
+    db.Ratings.findAll({
+      attributes: ["rating", "poem_title", "poem_author"],
+      where: {
+        UserId: req.params.userID,
+      },
+    }).then(function(results){
+      res.status(200);
+      res.json(results);
     });
   });
 
-  // Render 404 page for any unmatched routes
-  // app.get("*", function(req, res) {
-  //   res.render("404");
-  // });
+  app.get("/api/:poemTitle/ratings", (req, res)=>{
+    db.Poems.findOne({
+      attributes: ["id", "title", "author"],
+      where: {
+        title: req.params.poemTitle
+      }
+    }).then(function(result){
+      db.Ratings.findAll({
+      attributes: ["rating"],
+      where: {
+        PoemId: result.id
+      }
+      }).then(function(results){
+        res.status(200);
+        res.json(results);
+      });
+    });    
+  });
 };

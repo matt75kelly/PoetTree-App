@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes){
                 len: [1, 254]
             }
         },
-        lines: {
+        poem_lines: {
             type: DataTypes.TEXT,
             allowNull: false,
             validations: {

@@ -48,7 +48,7 @@ module.exports = function(app) {
             author: poem[0].author
           },
           defaults: {
-            lines: poem[0].lines.join(" ")
+            poem_lines: poem[0].lines.join(" ")
           }
         }).spread((sonnet, created)=>{
           if(created){
@@ -100,16 +100,17 @@ module.exports = function(app) {
     });
   });
   // Route for Creating New Rating for a User Profile
-  app.post("/api/:userID/:poemTitle/rating", (req, res)=>{
+  app.post("/api/:userID/rating", (req, res)=>{
     db.Poems.findOne({
-      attributes: [id. poem_title, poem_author],
+      attributes: ["id"],
       where: {
-        poem_title: req.params.poemTitle,
+        poem_title: req.body.poemTitle,
         poem_author: req.body.poemAuthor
       }
     }).catch(err=>{
       throw new Error(`Could not find Poem matching that Title: ${err}`);
     }).then(result=>{
+      console.log(result);
       let newRating ={
       rating: req.body.rating,
       UserId: req.params.userID,
