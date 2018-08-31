@@ -27,7 +27,7 @@ describe("POST /api/:userID/:poemID/ratings", function() {
     let newpoem = {
         title: "Epitaph",
         author: "Alexander Pope",
-        lines: "HIS AGE, 1735. If modest youth, with cool reflection crown'd"
+        poem_lines: "HIS AGE, 1735. If modest youth, with cool reflection crown'd"
     };
     var reqBody = {
       rating: 5,
@@ -55,7 +55,8 @@ describe("POST /api/:userID/:poemID/ratings", function() {
           .that.includes(
               {
                   rating: 5,
-                  UserId: 1
+                  UserId: '1',
+                  PoemId: 1
               }
           );
 

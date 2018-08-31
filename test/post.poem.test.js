@@ -9,7 +9,7 @@ chai.use(chaiHttp);
 
 var request;
 
-describe("POST /api/:userID/favorite", function() {
+describe("POST /api/poems", function() {
   // Before each test begins, create a new request server for testing
   // & delete all examples from the db
   beforeEach(function() {
@@ -22,7 +22,7 @@ describe("POST /api/:userID/favorite", function() {
     var reqBody = {
         title: "Epitaph. on Edmund Duke of Buckingham, Who Died in the Nineteenth Year of",
         author: "Alexander Pope",
-        lines: [
+        poem_lines: [
             "HIS AGE, 1735.",
             "",
             "If modest youth, with cool reflection crown'd,",
