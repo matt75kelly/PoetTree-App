@@ -1,34 +1,9 @@
 // load up the user model
-var db = require('../models');
 var bcrypt = require('bcrypt-nodejs');
 var LocalStrategy = require("passport-local");
 
 // expose this function to our app using module.exports
-module.exports = function(passport) {
-
-    // =========================================================================
-    // passport session setup ==================================================
-    // =========================================================================
-    // required for persistent login sessions
-    // passport needs ability to serialize and unserialize users out of session
-
-    // used to serialize the user for the session
-    passport.serializeUser(function(user, done) {
-        done(null, user.id);
-    });
-
-    // used to deserialize the user
-    passport.deserializeUser(function(id, done) {
-        db.Users.findOne({
-            where: {
-                id: id
-            }
-        }).then(result=>{
-            done(result);
-        }).catch(err=>{
-            throw new Error(`Could not deserialize User with ID: ${id}: ${err}`)
-        });
-    });
+module.exports = function(db, passport) {
     // =========================================================================
     // LOCAL SIGNUP ============================================================
     // =========================================================================
@@ -45,9 +20,6 @@ module.exports = function(passport) {
         },
         function(req, username, password, done) {
             // we are checking to see if the user trying to login already exists
-            console.log(req.body);
-            console.log(`Username: ${username}`);
-            console.log(`Password: ${password}`);
             db.Users.findOrCreate({
                 where: {
                   email: req.body.email
@@ -98,8 +70,27 @@ module.exports = function(passport) {
             })
         })
     );
-};
+    // Configure Passport authenticated session persistence.
+    //
+    // In order to restore authentication state across HTTP requests, Passport needs
+    // to serialize users into and deserialize users out of the session.  The
+    // typical implementation of this is as simple as supplying the user ID when
+    // serializing, and querying the user record by ID from the database when
+    // deserializing.
+    passport.serializeUser(function(user, done) {
+        done(null, user.id);
+    });
 
-// passport.use(new LocalStrategy(config.passport.authenticate()));
-// passport.serializeUser(db.Users.serializeUser());
-// passport.deserializeUser(db.Users.deserializeUser())
+    // used to deserialize the user
+    passport.deserializeUser(function(id, done) {
+        db.Users.findOne({
+            where: {
+                id: id
+            }
+        }).then(result=>{
+            done(result);
+        }).catch(err=>{
+            throw new Error(`Could not deserialize User with ID: ${id}: ${err}`)
+        });
+    });
+};

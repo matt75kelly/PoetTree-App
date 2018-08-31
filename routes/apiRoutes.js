@@ -3,6 +3,15 @@ var db = require("../models");
 const request = require("request");
 
 module.exports = function(app, passport) {
+  function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+      return next();
+  
+    // if they aren't redirect them to the home page
+    res.redirect('/');
+  };
   // Route for Poem Search List
   app.get("/api/poems/:poemQuery/:poemTitle?/:poemAuthor?", (req, res)=>{
     let searchQuery = `lines`;
@@ -62,7 +71,7 @@ module.exports = function(app, passport) {
       }
     })
   })
-  app.get("/api/:userID/favorites", (req, res)=>{
+  app.get("/api/:userID/favorites", isLoggedIn, (req, res)=>{
     db.Favorites.findAll({
       attributes: ["poem_title", "poem_author"],
       where: {
@@ -76,7 +85,7 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.get("/api/:userID/ratings", (req, res)=>{
+  app.get("/api/:userID/ratings", isLoggedIn, (req, res)=>{
     db.Ratings.findAll({
       attributes: ["rating", "poem_title", "poem_author"],
       where: {
@@ -88,7 +97,7 @@ module.exports = function(app, passport) {
     });
   });
 
-  app.get("/api/:poemTitle/ratings", (req, res)=>{
+  app.get("/api/:poemTitle/ratings", isLoggedIn, (req, res)=>{
     db.Poems.findOne({
       attributes: ["id", "title", "author"],
       where: {
@@ -106,29 +115,8 @@ module.exports = function(app, passport) {
       });
     });    
   });
-  // Route for Creating New User Profiles
-  // app.post("/api/users", (req, res)=>{
-  //   db.Users.findOrCreate({
-  //     where: {
-  //       email: req.body.email
-  //     },
-  //     defaults: {
-  //       username: req.body.username
-  //     }
-  //   }).spread((user, created)=>{
-  //     if(created){
-  //       res.status(200);
-  //       res.json(user);
-  //     } else{
-  //       res.status(500);
-  //       res.send("Error creating new User Profile, User Already created");
-  //     }
-  //   }).catch(err=>{
-  //     throw new Error(`Error Creating New User: ${err}`);
-  //   });
-  // });
   // Route for Creating New Favorite for a User Profile
-  app.post("/api/:userID/favorite", (req, res)=>{
+  app.post("/api/:userID/favorite", isLoggedIn, (req, res)=>{
     let newFavorite = {
       poem_title: req.body.poem_title,
       poem_author: req.body.poem_author,
@@ -143,7 +131,7 @@ module.exports = function(app, passport) {
     });
   });
   // Route for Creating New Rating for a User Profile
-  app.post("/api/:userID/rating", (req, res)=>{
+  app.post("/api/:userID/rating", isLoggedIn, (req, res)=>{
     db.Poems.findOne({
       attributes: ["id"],
       where: {
@@ -168,7 +156,7 @@ module.exports = function(app, passport) {
     });
   });
   // Route for Creating New User Comments on a Poem
-  app.post("/api/:userID/:poemTitle/comment", (req, res)=>{
+  app.post("/api/:userID/:poemTitle/comment", isLoggedIn, (req, res)=>{
     db.Poems.findOne({
       attributes: [id. poem_title, poem_author],
       where: {
@@ -194,23 +182,23 @@ module.exports = function(app, passport) {
   });
   // process the signup form
 	app.post('/signup', passport.authenticate('local-signup', {
-		successRedirect : '/', // redirect to the secure profile section
 		failureRedirect : '/login', // redirect back to the signup page if there is an error
 		failureFlash : true // allow flash messages
-  }));
+  }), (req, res)=>{
+    console.log("New User created");
+    res.redirect("/");
+  });
 
   app.post('/login', passport.authenticate('local-login', {
-    successRedirect : '/:username', // redirect to the secure profile section
     failureRedirect : '/login', // redirect back to the signup page if there is an error
     failureFlash : true // allow flash messages
     }), (req, res)=>{
         console.log("hello");
-
         if (req.body.remember) {
           req.session.cookie.maxAge = 1000 * 60 * 3;
         } else {
           req.session.cookie.expires = false;
         }
-    res.redirect('/');
+      res.redirect("/");
     });
 };

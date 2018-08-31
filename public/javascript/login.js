@@ -3,7 +3,7 @@ function validFormData(data){
 }
 
 $(document).ready(function(){
-    $(".signup").on("click", function(){
+    $(".signup").click(function(event){
         event.preventDefault();
         let user ={
             username : $("#name").val().trim(),
@@ -16,11 +16,26 @@ $(document).ready(function(){
                 url: "/signup",
                 method: "POST",
                 data: user
-            }).catch(err=>{
-                alert("New User Creation Failed");
-                console.log(err);
             }).then(results=>{
                 console.log(results);
+            });
+        }
+    });
+    $(".login").click( function(event){
+        event.preventDefault();
+        let user ={
+            username : $("#name").val().trim(),
+            email : $("#email").val().trim(),
+            password: $("#password").val().trim(),
+        };
+
+        if(validFormData(user)){
+            $.ajax({
+                url: "/login",
+                method: "POST",
+                data: user
+            }).then(result=>{
+                console.log("Successful Login");
             });
         }
     })

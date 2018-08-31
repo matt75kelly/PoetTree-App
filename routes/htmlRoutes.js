@@ -14,13 +14,38 @@ function isLoggedIn(req, res, next) {
 module.exports = function(app) {
   // Load index page
   app.get("/", function(req, res) {
-    res.status(200);
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+    console.log(req.user);
+    var options = {
+      root: path.join(__dirname + `../public/`),
+      dotfiles: 'deny',
+      headers: {
+          'x-timestamp': Date.now(),
+          'x-sent': true
+      }
+    };
+    res.sendFile("index.html", options, err=>{
+      if(err){
+        console.log(err);
+        throw new Error(`Error sending HTML page: ${err}`);
+      }
+    });
   });
 
   app.get("/login", (req, res)=>{
-    res.status(200);
-    res.sendFile(path.join(__dirname, "../public/login.html"));
+    console.log(req.user);
+    var options = {
+      root: path.join(__dirname, `../public/`),
+      dotfiles: 'deny',
+      headers: {
+          'x-timestamp': Date.now(),
+          'x-sent': true
+      }
+    };
+    res.sendFile("login.html", options, err=>{
+      if(err){
+        throw new Error(`Error sending HTML page: ${err}`);
+      }
+    });
   })
   // Load user Profile page
 	// we will want this protected so you have to be logged in to visit
