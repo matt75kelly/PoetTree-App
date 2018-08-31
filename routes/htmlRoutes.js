@@ -1,70 +1,64 @@
 var db = require("../models");
+var path = require("path");
+// route middleware to make sure
+function isLoggedIn(req, res, next) {
+
+	// if user is authenticated in the session, carry on
+	if (req.isAuthenticated())
+		return next();
+
+	// if they aren't redirect them to the home page
+	res.redirect('/');
+}
 
 module.exports = function(app) {
   // Load index page
   app.get("/", function(req, res) {
     res.status(200);
-    res.send("index.html");
-  });
-  
-  app.get("/:username", (req, res)=>{
-    db.Users.findOne({
-      where: {
-        username: req.params.username
-      }
-    }).then(result=>{
-      console.log(result);
-      res.status(200);
-      res.render("userProfile",{
-        result
-      });
-    }).catch(err=>{
-      res.status(404);
-      throw new Error(`Can't Find User with username ${req.params.username}: ${err}`);
-    })
-  });
-  app.get("/api/:userID/favorites", (req, res)=>{
-    db.Favorites.findAll({
-      attributes: ["poem_title", "poem_author"],
-      where: {
-        UserId: req.params.userID,
-      },
-    }).then(function(results){
-      res.status(200);
-      res.json(results);
-    }).catch(err=>{
-      throw new Error(``);
-    });
+    res.sendFile(path.join(__dirname, "../public/index.html"));
   });
 
-  app.get("/api/:userID/ratings", (req, res)=>{
-    db.Ratings.findAll({
-      attributes: ["rating", "poem_title", "poem_author"],
-      where: {
-        UserId: req.params.userID,
-      },
-    }).then(function(results){
-      res.status(200);
-      res.json(results);
-    });
-  });
+  app.get("/login", (req, res)=>{
+    res.status(200);
+    res.sendFile(path.join(__dirname, "../public/login.html"));
+  })
+  // Load user Profile page
+	// we will want this protected so you have to be logged in to visit
+	// we will use route middleware to verify this (the isLoggedIn function)
+	app.get('/profile', isLoggedIn, function(req, res) {
+		res.render('userProfile', {
+			user : req.user // get the user out of session and pass to template
+		});
+	});
 
-  app.get("/api/:poemTitle/ratings", (req, res)=>{
+	// =====================================
+	// LOGOUT ==============================
+	// =====================================
+	app.get('/logout', function(req, res) {
+		req.logout();
+		res.redirect('/');
+	});
+
+  // Load Search page
+  app.get("/search",(req, res)=>{
+    res.status(200);
+    res.send("search.html");
+  });
+  // Load Poem Profile Page
+  app.get("/poems/:poemTitle", (req, res)=>{
     db.Poems.findOne({
-      attributes: ["id", "title", "author"],
       where: {
         title: req.params.poemTitle
       }
-    }).then(function(result){
-      db.Ratings.findAll({
-      attributes: ["rating"],
-      where: {
-        PoemId: result.id
-      }
-      }).then(function(results){
-        res.status(200);
-        res.json(results);
+    }).catch(err=>{
+      res.status(500);
+      throw new Error(`Could not find poem with title ${req.params.poemTitle}: ${err}`);
+    }).then(result=>{
+      res.status(200);
+      res.render("poemProfile", {
+        result
       });
-    });    
-  });
+    })
+  })
 };
+
