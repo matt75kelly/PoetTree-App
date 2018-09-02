@@ -57,7 +57,7 @@ module.exports = function(app, passport) {
             author: poem[0].author
           },
           defaults: {
-            poem_lines: poem[0].lines.join(" ")
+            poem_lines: poem[0].lines.join("|")
           }
         }).spread((sonnet, created)=>{
           if(created){
@@ -187,7 +187,7 @@ module.exports = function(app, passport) {
       console.log('Inside passport.authenticate() callback');
       console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
       console.log(`req.user: ${JSON.stringify(req.user)}`)
-      req.login(user, (err) => {
+      req.login(user, err=> {
         console.log('Inside req.login() callback')
         console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
         console.log(`req.user: ${JSON.stringify(req.user)}`)

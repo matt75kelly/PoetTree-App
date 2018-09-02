@@ -37,7 +37,7 @@ module.exports = function(app) {
 	// we will use route middleware to verify this (the isLoggedIn function)
 	app.get('/users/:username', isLoggedIn, function(req, res) {
     db.Users.findOne({
-      attribure: [
+      attributes: [
         `Users.id`, `Users.username`, `Users.email`, `Users.createdAt`,
         `favorites.poem_title`, `favorites.poem_author`,
         `comments.comment_title`, `comments.comment_body`, `comments.is_private`, `comments.comment.createdAt`],
@@ -81,11 +81,11 @@ module.exports = function(app) {
   // Load Poem Profile Page
   app.get("/poems/:poemTitle", (req, res)=>{
     db.Poems.findOne({
+      attributes: ["Poems.title", "Poems.author", "Poems.poem_lines",
+      "comments.comment_title", "comments.comment_author", "comments.comment_body", "comments.is_private",
+      "ratings.rating"],
       include: [
         {
-          model: db.Favorites,
-          as: "favorites"
-         },{
            model: db.Comments,
           as: "comments"
          },{
