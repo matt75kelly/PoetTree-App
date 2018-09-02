@@ -15,9 +15,14 @@ $(document).ready(function(){
             $.ajax({
                 url: "/signup",
                 method: "POST",
-                data: user
+                data: user,
             }).then(results=>{
                 console.log(results);
+                window.location.replace(`/users/${results}`);
+            }).catch(err=>{
+                if(err || results.statusCode() !== 200){
+                    console.log(`AJAX signup error: ${JSON.stringify(err)}`);
+                }
             });
         }
     });
@@ -34,8 +39,13 @@ $(document).ready(function(){
                 url: "/login",
                 method: "POST",
                 data: user
-            }).then(result=>{
-                console.log("Successful Login");
+            }).then(results=>{
+                console.log(results);
+                window.location.replace(`/users/${results}`);
+                if(results.statusCode !== 200){
+                    console.log("Login Failed");
+                    alert("User Login Failed. Invalid Credentials");
+                }
             });
         }
     })

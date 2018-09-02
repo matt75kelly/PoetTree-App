@@ -8,15 +8,23 @@ var app = express();
 var db = require("./models");
 var flash = require("connect-flash");
 var PORT = process.env.PORT || 7070;
+const uuid = require("uuid/v4");
+const FileStore = require('session-file-store')(session);
 
 // Middleware
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   require('./config/passport')(db, passport); // pass passport for configuration
   var sess = {
+    genid: (req) => {
+      console.log('Inside the session middleware')
+      console.log(req.sessionID)
+      return uuid() // use UUIDs for session IDs
+    },
+    store: new FileStore(),
     secret: process.env.EXPRESS_SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {}
   }
   if (app.get('env') === 'production') {

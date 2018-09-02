@@ -31,12 +31,13 @@ module.exports = function(db, passport) {
               }).spread((user, created)=>{
                 if(created){
                   console.log("User Successfully created");
-                  return done(null, user);
-                } else{
-                  return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+                  return done(null, user.dataValues, {signupMessage: `User Successfully Created.`});
+                } 
+                else{
+                  return done(null, false, {signupMessage: 'That username is already taken.'});
                 }
               }).catch(err=>{
-                throw new Error(`Error Creating New User: ${err}`);
+                return done(err, false, {signupMessage: 'Error occurred. User Not Created'});
               });
         })
     );
@@ -55,17 +56,21 @@ module.exports = function(db, passport) {
             passwordField : 'password',
             passReqToCallback : true // allows us to pass back the entire request to the callback
         },
-        function(req, username, password, done) { // callback with email and password from our form
+        function(req, username, password, done) { // callback with username and password from our form
+            console.log(req.body.user);
             db.Users.findOne({
                 where:{
-                    email: username,
+                    username: username,
+                    email: req.body.user.email
                 }
             }).catch(err=>{
-                throw new Error(`No User found with that email: ${err}`);
+                return done(err, false, {loginMessage: `Could Not Find User by that name.`});
             }).then(result=>{
                 if(!bcrypt.compareSync(password, result.password)){
-                    return done(null, false, req.flash('loginMessage', 'Oops! Wrong Password.'));
+                    console.log(`Login Failed: Bad Password`);
+                    return done(null, false, {loginMessage: 'Oops! Wrong Password.'});
                 }
+                console.log(`User Login Successful. Welcome ${req.user.username}`);
                 return done(null, result);
             })
         })
@@ -78,19 +83,24 @@ module.exports = function(db, passport) {
     // serializing, and querying the user record by ID from the database when
     // deserializing.
     passport.serializeUser(function(user, done) {
-        done(null, user.id);
+        console.log("User serialized");
+        return done(null, user.id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
+        console.log(id);
         db.Users.findOne({
             where: {
                 id: id
             }
         }).then(result=>{
-            done(result);
+            console.log(result);
+            console.log(`User Deserialized Successfully`);
+            return done(null, result);
         }).catch(err=>{
-            throw new Error(`Could not deserialize User with ID: ${id}: ${err}`)
+            console.log(err);
+           return done(err, false, {loginMessage: `Could not deserialize User with ID: ${id}: ${err}`})
         });
     });
 };
