@@ -1,12 +1,33 @@
 module.exports = function(sequelize, DataTypes){
     var Comments = sequelize.define("Comments", {
+        comment_title: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validations: {
+                notEmpty: true,
+                len: [1, 60]
+            }
+        },
+        comment_author: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validations: {
+                notEmpty: true,
+                len: [1, 40]
+            }
+        },
         comment_body: {
             type: DataTypes.STRING,
             allowNull: false,
             validations: {
                 notEmpty: true,
-                len: [1, 254]
+                len: [1, 254],
             }
+        },
+        is_private: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            default: false
         }    
     });
     // Needs associations:
