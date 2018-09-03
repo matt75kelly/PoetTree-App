@@ -57,7 +57,7 @@ module.exports = function(app, passport) {
             author: poem[0].author
           },
           defaults: {
-            poem_lines: poem[0].lines.join(" ")
+            poem_lines: poem[0].lines.join("|")
           }
         }).spread((sonnet, created)=>{
           if(created){
@@ -180,25 +180,34 @@ module.exports = function(app, passport) {
       })
     });
   });
-  // process the signup form
-	app.post('/signup', passport.authenticate('local-signup', {
-		failureRedirect : '/login', // redirect back to the signup page if there is an error
-		failureFlash : true // allow flash messages
-  }), (req, res)=>{
-    console.log("New User created");
-    res.redirect("/");
-  });
+  // Creating a new User and Logging them in
+  app.post('/signup', (req, res, next) => {
+    console.log('Inside POST /signin callback')
+    passport.authenticate('local-signup', (err, user, info) => {
+      console.log('Inside passport.authenticate() callback');
+      console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
+      console.log(`req.user: ${JSON.stringify(req.user)}`)
+      req.login(user, err=> {
+        console.log('Inside req.login() callback')
+        console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
+        console.log(`req.user: ${JSON.stringify(req.user)}`)
+        res.status(200).json(req.user.username);
+      });
+    })(req, res, next);
+  })
 
-  app.post('/login', passport.authenticate('local-login', {
-    failureRedirect : '/login', // redirect back to the signup page if there is an error
-    failureFlash : true // allow flash messages
-    }), (req, res)=>{
-        console.log("hello");
-        if (req.body.remember) {
-          req.session.cookie.maxAge = 1000 * 60 * 3;
-        } else {
-          req.session.cookie.expires = false;
-        }
-      res.redirect("/");
-    });
-};
+  app.post('/login', (req, res, next)=>{
+    console.log('Inside POST /signin callback')
+    passport.authenticate('local-signup', (err, user, info) => {
+        console.log('Inside passport.authenticate() callback');
+        console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
+        console.log(`req.user: ${JSON.stringify(req.user)}`)
+        req.login(user, (err) => {
+            console.log('Inside req.login() callback')
+            console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
+            console.log(`req.user: ${JSON.stringify(req.user)}`)
+            res.status(200).json(req.user.username);
+        });
+    })(req, res, next);
+  });
+}

@@ -4,9 +4,10 @@ var path = require("path");
 function isLoggedIn(req, res, next) {
 
 	// if user is authenticated in the session, carry on
-	if (req.isAuthenticated())
+	if (req.isAuthenticated()){
+    console.log("isAuthenticated: Passed");
 		return next();
-
+  }
 	// if they aren't redirect them to the home page
 	res.redirect('/');
 }
@@ -15,15 +16,7 @@ module.exports = function(app) {
   // Load index page
   app.get("/", function(req, res) {
     console.log(req.user);
-    var options = {
-      root: path.join(__dirname + `../public/`),
-      dotfiles: 'deny',
-      headers: {
-          'x-timestamp': Date.now(),
-          'x-sent': true
-      }
-    };
-    res.sendFile("index.html", options, err=>{
+    res.sendFile(path.join(__dirname, `../public/index.html`), err=>{
       if(err){
         console.log(err);
         throw new Error(`Error sending HTML page: ${err}`);
@@ -33,32 +26,48 @@ module.exports = function(app) {
 
   app.get("/login", (req, res)=>{
     console.log(req.user);
-    var options = {
-      root: path.join(__dirname, `../public/`),
-      dotfiles: 'deny',
-      headers: {
-          'x-timestamp': Date.now(),
-          'x-sent': true
-      }
-    };
-    res.sendFile("login.html", options, err=>{
+    res.sendFile(path.join(__dirname, `../public/login.html`), err=>{
       if(err){
         throw new Error(`Error sending HTML page: ${err}`);
       }
     });
-  })
+  });
   // Load user Profile page
 	// we will want this protected so you have to be logged in to visit
 	// we will use route middleware to verify this (the isLoggedIn function)
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('userProfile', {
-			user : req.user // get the user out of session and pass to template
-		});
+	app.get('/users/:username', isLoggedIn, function(req, res) {
+    db.Users.findOne({
+      attributes: [
+        `Users.id`, `Users.username`, `Users.email`, `Users.createdAt`,
+        `favorites.poem_title`, `favorites.poem_author`,
+        `comments.comment_title`, `comments.comment_body`, `comments.is_private`, `comments.comment.createdAt`],
+      include: [
+        {
+          model: db.Favorites,
+          as: "favorites"
+         },
+         {
+          model: db.Comments,
+          as: "comments"
+         }],
+      where: {
+        username: req.user.username,
+        email: req.user.email
+      }
+    }).catch(err=>{
+      throw new Error(`Could not find User Information: ${err}`);
+    }).then(result=>{
+      let user = {
+        username: result.username,
+        email: result.email,
+        favorites: result.favorites,
+        comments: result.comments
+      };
+      res.render('userProfile', user);
+    })
 	});
 
-	// =====================================
-	// LOGOUT ==============================
-	// =====================================
+	// logout
 	app.get('/logout', function(req, res) {
 		req.logout();
 		res.redirect('/');
@@ -72,18 +81,32 @@ module.exports = function(app) {
   // Load Poem Profile Page
   app.get("/poems/:poemTitle", (req, res)=>{
     db.Poems.findOne({
+      attributes: ["Poems.title", "Poems.author", "Poems.poem_lines",
+      "comments.comment_title", "comments.comment_author", "comments.comment_body", "comments.is_private",
+      "ratings.rating"],
+      include: [
+        {
+           model: db.Comments,
+          as: "comments"
+         },{
+           model: db.Ratings,
+           as: "ratings"
+         }],
       where: {
-        title: req.params.poemTitle
+        title: req.params.poemTitle,
       }
     }).catch(err=>{
-      res.status(500);
-      throw new Error(`Could not find poem with title ${req.params.poemTitle}: ${err}`);
+      throw new Error(`Could not collect Poem Information: ${err}`);
     }).then(result=>{
-      res.status(200);
-      res.render("poemProfile", {
-        result
-      });
+      let poem = {
+        title: result.title,
+        author: result.author,
+        favorites: result.favorites,
+        comments: result.comments,
+        ratings: result.ratings,
+      };
+      res.render('poemProfile', poem);
     })
-  })
+	});
 };
 

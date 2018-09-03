@@ -1,0 +1,11 @@
+<div class="card" id="note{{@index}}" data-comment-id="{{id}}">
+  <div class="card-header">
+    <h3>{{id}}. {{poem_title}} by: {{poem_author}}</h3>
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-{{@index}}">
+      <p>Favorited on: {{createdAt}}</p>
+      <a class="btn btn-primary" href="/poem/{{poem_title}}" role="button">Poem Page</a>
+    </blockquote>
+  </div>
+</div>
