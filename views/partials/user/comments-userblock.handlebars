@@ -1,0 +1,11 @@
+<div class="card" id="note{{@index}}" data-comment-id="{{id}}">
+  <div class="card-header">
+    <h3>{{comment_title}}</h3>
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-{{@index}}">
+      <p>{{comment_body}}</p>
+      <footer class="blockquote-footer">shared by: <cite title="Source Title">{{comment_author}} on {{createdAt}}</cite></footer>
+    </blockquote>
+  </div>
+</div>

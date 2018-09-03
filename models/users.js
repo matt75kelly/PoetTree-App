@@ -6,6 +6,15 @@ module.exports = function(sequelize, DataTypes) {
             validations: {
                 len: [1, 254],
                 notEmpty: true
+            },
+            unique: "UniqueUser"
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validations: {
+                notEmpty: true,
+                len: [1,254]
             }
         },
         email: {
