@@ -29,7 +29,7 @@ module.exports = function(sequelize, DataTypes){
     // One poem to many comments
     Poems.associate = function(models){
         Poems.hasMany(models.Ratings, {
-            as: "Ratings",
+            as: "ratings",
             onDelete: "cascade"
         });
         Poems.hasMany(models.Comments, {

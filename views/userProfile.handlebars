@@ -1,7 +1,8 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h1>{{user.username}}'s Poem Corner</h1>
+      <h1>{{username}}'s Poem Corner</h1>
+      <button type="button" class="btn btn-light search float-right">Search For Poems</button>
     </div>
   </div>
   <div class="row">
@@ -17,3 +18,11 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+$(document).ready(function(){
+  $(document).on("click", ".search", function(event){
+    event.preventDefault();
+    window.location.assign("/search");
+  });
+});  
+</script>
