@@ -14,33 +14,25 @@
             <h1 class="display-4">Poet-Tree</h1>
             <p class="lead">Welcome to Poet-Tree the online poetry enthusiasts community</p>
             <hr class="my-4">
-            <p>Search for Your Next Favorite Poem</p>
+            <p>Enter All the Input Fields to Create an Account</p>
+            
         </div>
 
-        <div class="container-fluid searchForm">
+        <div class="container-fluid">
             <form>
-                <div class="form-group text-center justify-content-center">
-                  <label for="poemQuery"><h5>Poem Subject</h5></label>
-                  <input type="text" class="form-control text-center" id="poemQuery" placeholder="Poem Keyword">
+                
+                <div class="form-group">
+                    <label for="userEmail">Email address</label>
+                    <input type="email" class="form-control" id="userEmail" aria-describedby="emailHelp" placeholder="Enter email">
+                    <small id="emailHelp" class="form-text text-muted">Provide an Account Email</small>
                 </div>
-                <div class="form-row text-center">
-                  <div class="form-group col-md-6">
-                    <label for="poemAuthor"><h5>Poem Author</h5></label>
-                    <input type="text" class="form-control text-center" id="poemAuthor" placeholder="Poet Name">
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="poemTitle"><h5>Poem Title</h5></label>
-                    <input type="text" class="form-control text-center" id="poemTitle" placeholder="Poem Title">
-                  </div>
+                <div class="form-group">
+                    <label for="userPassword">Password</label>
+                    <input type="password" class="form-control" id="userPassword" placeholder="Password">
                 </div>
-                <div class="row justify-content-center"> 
-                  <button type="submit" class="btn btn-primary" id="search">Search</button>
-                </div> 
-              </form>
+                <button type="submit" class="btn btn-primary login">Log In</button> 
+            </form>
         </div>
-        <div class="row searchResults">
-
-        </div>
-        <script src="javascript/search.js"></script>
+        <script src="javascript/login.js"></script>
     </body>
 </html>

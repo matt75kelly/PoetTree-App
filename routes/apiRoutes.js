@@ -41,12 +41,12 @@ module.exports = function(app, passport) {
   });
   // Route for Pulling a Single Poem
   // This may need to go into the html routes?
-  app.get("/api/poem/:poemTitle/:poemAuthor", (req,res)=>{
+  app.post("/api/poem/:poemTitle/:poemAuthor", (req,res)=>{
     let searchQuery = `title,author`;
     let queries = `${req.params.poemTitle};${req.params.poemAuthor}`;
     let url = `${process.env.API_BASE_URL}/${searchQuery}/${queries}`;
     request(url, (err, response)=>{
-      if(err || response.statusCode !== 200){
+      if(err){
         throw new Error(`Could not retrieve Poem from API: ${err}`);
       }
       else{
@@ -156,22 +156,15 @@ module.exports = function(app, passport) {
     });
   });
   // Route for Creating New User Comments on a Poem
-  app.post("/api/:userID/:poemTitle/comment", isLoggedIn, (req, res)=>{
-    db.Poems.findOne({
-      attributes: [id. poem_title, poem_author],
-      where: {
-        poem_title: req.params.poemTitle,
-        poem_author: req.body.poemAuthor
-      }
-    }).catch(err=>{
-      throw new Error(`Could not find Poem matching that Title: ${err}`);
-    }).then(result=>{
-      let newComment = {
-        comment_body: res.body.comment,
-        PoemId: result.id,
-        UserId: req.params.userID, 
-        is_private: res.body.private
-      };
+  app.post("/api/comments", isLoggedIn, (req, res)=>{
+    let newComment = {
+      comment_title: req.body.title,
+      comment_author: req.user.username,
+      comment_body: req.body.body,
+      is_private: req.body.private,
+      PoemId: req.body.poemID,
+      UserId: req.user.id
+    }
       db.Comments.create(newComment).catch(err=>{
         throw new Error(`Could not Save New Comment for Poem: ${req.params.poemTitle}: ${err}`);
       }).then(result=>{
@@ -179,7 +172,6 @@ module.exports = function(app, passport) {
         res.json(result);
       })
     });
-  });
   // Creating a new User and Logging them in
   app.post('/signup', (req, res, next) => {
     console.log('Inside POST /signin callback')
@@ -206,7 +198,7 @@ module.exports = function(app, passport) {
             console.log('Inside req.login() callback')
             console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
             console.log(`req.user: ${JSON.stringify(req.user)}`)
-            res.status(200).json(req.user.username);
+            res.status(200).json(req.user);
         });
     })(req, res, next);
   });

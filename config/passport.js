@@ -60,8 +60,7 @@ module.exports = function(db, passport) {
             console.log(req.body.user);
             db.Users.findOne({
                 where:{
-                    username: username,
-                    email: req.body.user.email
+                    email: username
                 }
             }).catch(err=>{
                 return done(err, false, {loginMessage: `Could Not Find User by that name.`});

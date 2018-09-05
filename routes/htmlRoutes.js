@@ -19,16 +19,26 @@ module.exports = function(app) {
     res.sendFile(path.join(__dirname, `../public/index.html`), err=>{
       if(err){
         console.log(err);
-        throw new Error(`Error sending HTML page: ${err}`);
+        throw new Error(`Error sending index.html page: ${err}`);
       }
     });
   });
-
+  
   app.get("/login", (req, res)=>{
     console.log(req.user);
     res.sendFile(path.join(__dirname, `../public/login.html`), err=>{
       if(err){
-        throw new Error(`Error sending HTML page: ${err}`);
+        throw new Error(`Error sending login.html page: ${err}`);
+      }
+    });
+  });
+
+  app.get("/signup", function(req, res) {
+    console.log(req.user);
+    res.sendFile(path.join(__dirname, `../public/signup.html`), err=>{
+      if(err){
+        console.log(err);
+        throw new Error(`Error sending signup.html page: ${err}`);
       }
     });
   });
@@ -37,10 +47,10 @@ module.exports = function(app) {
 	// we will use route middleware to verify this (the isLoggedIn function)
 	app.get('/users/:username', isLoggedIn, function(req, res) {
     db.Users.findOne({
-      attributes: [
-        `Users.id`, `Users.username`, `Users.email`, `Users.createdAt`,
-        `favorites.poem_title`, `favorites.poem_author`,
-        `comments.comment_title`, `comments.comment_body`, `comments.is_private`, `comments.comment.createdAt`],
+      // attributes: [
+      //   `Users.username`, `Users.email`, `Users.createdAt`,
+      //   `favorites.poem_title`, `favorites.poem_author`,
+      //   `comments.comment_title`, `comments.comment_body`, `comments.is_private`, `comments.createdAt`],
       include: [
         {
           model: db.Favorites,
@@ -63,6 +73,7 @@ module.exports = function(app) {
         favorites: result.favorites,
         comments: result.comments
       };
+      console.log(user);
       res.render('userProfile', user);
     })
 	});
@@ -74,16 +85,18 @@ module.exports = function(app) {
 	});
 
   // Load Search page
-  app.get("/search",(req, res)=>{
+  app.get("/search",isLoggedIn, (req, res)=>{
     res.status(200);
-    res.send("search.html");
+    res.sendFile(path.join(__dirname, "../public/search.html"), err=>{
+      if(err){
+        throw new Error(`Could not retrieve search.html: ${err}`);
+      }
+    });
   });
   // Load Poem Profile Page
-  app.get("/poems/:poemTitle", (req, res)=>{
+  app.get("/poems/:poemTitle/:poemAuthor", isLoggedIn, (req, res)=>{
+    console.log("Entered Route");
     db.Poems.findOne({
-      attributes: ["Poems.title", "Poems.author", "Poems.poem_lines",
-      "comments.comment_title", "comments.comment_author", "comments.comment_body", "comments.is_private",
-      "ratings.rating"],
       include: [
         {
            model: db.Comments,
@@ -94,19 +107,24 @@ module.exports = function(app) {
          }],
       where: {
         title: req.params.poemTitle,
+        author: req.params.poemAuthor
       }
-    }).catch(err=>{
-      throw new Error(`Could not collect Poem Information: ${err}`);
     }).then(result=>{
+      console.log(result);
       let poem = {
         title: result.title,
         author: result.author,
+        body: result.poem_lines,
         favorites: result.favorites,
         comments: result.comments,
         ratings: result.ratings,
       };
+      console.log("Rendering WebPage");
+      console.log(poem);
       res.render('poemProfile', poem);
-    })
+    }).catch(err=>{
+      throw new Error(`Could not collect Poem Information: ${err}`);
+    });
 	});
 };
 
