@@ -22,7 +22,7 @@ const FileStore = require('session-file-store')(session);
       return uuid() // use UUIDs for session IDs
     },
     store: new FileStore(),
-    secret: process.env.EXPRESS_SESSION_SECRET,
+    secret: "$2a$10$afd9ej0bnCRDeCT/M/cCiufPdLWZNFpRJdqPFLC7OWDp5Gn5sW9Gq",
     resave: false,
     saveUninitialized: true,
     cookie: {}
