@@ -1,23 +1,20 @@
 {
   "development": {
     "username": "root",
-    "password": "",
+    "password": "vPjrS6%29w,",
     "database": "PoetTree_db",
     "host": "localhost",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
-    "password": "",
+    "password": "vPjrS6%29w,",
     "database": "database_test",
     "host": "localhost",
     "dialect": "mysql"
   },
   "production": {
-    "username": "ppann2opzf9anc20",
-    "password": "m5liyrvsw7pyiajf",
-    "database": "kuer6l8wxpq2bqq1",
-    "host": "gtizpe105piw2gfq.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-    "dialect": "mysql"
+    "use_env_variable": "JAWSDB_URL",
+    "dialect":"mysql"
   }
 }
