@@ -1,14 +1,14 @@
 {
   "development": {
     "username": "root",
-    "password": "",
+    "password": "vPjrS6%29w,",
     "database": "PoetTree_db",
     "host": "localhost",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
-    "password": "",
+    "password": "vPjrS6%29w,",
     "database": "database_test",
     "host": "localhost",
     "dialect": "mysql"
