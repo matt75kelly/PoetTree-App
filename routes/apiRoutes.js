@@ -203,4 +203,18 @@ module.exports = function(app, passport) {
         });
     })(req, res, next);
   });
+
+  app.delete('/api/favorite/:favId', isLoggedIn, (req, res)=>{
+    console.log('Deleting Favorite');
+    db.Favorites.destroy({
+      where: {
+        id: req.params.favId
+      }
+    }).then(result=>{
+      console.log(`Deleted Favorite from user database`);
+      res.status(200);
+    }).catch(err=>{
+      throw new Error(`Failed to Delete User Favorite: ${err}`);
+    })
+  })
 }

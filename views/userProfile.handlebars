@@ -24,5 +24,16 @@ $(document).ready(function(){
     event.preventDefault();
     window.location.assign("/search");
   });
+  $(document).on("click", ".deleteFav", function(event){
+    event.preventDefault();
+    $.ajax({
+      url: `/api/favorite/${$(this).attr("data-id")}`,
+      method: "DELETE",
+    }).then(result=>{
+      console.log(result);
+    }).catch(err=>{
+      console.log(err);
+    })
+  })
 });  
 </script>
