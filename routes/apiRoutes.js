@@ -116,11 +116,11 @@ module.exports = function(app, passport) {
     });    
   });
   // Route for Creating New Favorite for a User Profile
-  app.post("/api/:userID/favorite", isLoggedIn, (req, res)=>{
+  app.post("/api/favorite", isLoggedIn, (req, res)=>{
     let newFavorite = {
       poem_title: req.body.poem_title,
       poem_author: req.body.poem_author,
-      UserId: req.params.userID
+      UserId: req.user.id
     };
     db.Favorites.create(newFavorite).catch(err=>{
       res.status(500);
@@ -165,8 +165,9 @@ module.exports = function(app, passport) {
       PoemId: req.body.poemID,
       UserId: req.user.id
     }
+    console.log(`New Comment: ${newComment}`);
       db.Comments.create(newComment).catch(err=>{
-        throw new Error(`Could not Save New Comment for Poem: ${req.params.poemTitle}: ${err}`);
+        throw new Error(`Could not Save New Comment for Poem: ${err}`);
       }).then(result=>{
         console.log(result);
         res.json(result);

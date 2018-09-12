@@ -12,6 +12,17 @@ function isLoggedIn(req, res, next) {
 	res.redirect('/');
 }
 
+function buildNotes(comments, user){
+  let notes = [];
+  console.log(`Comment Parameter: ${JSON.stringify(comments[0])}`);
+  for(let i = comments.length-1; i >0; i--){
+    if(comments[i].is_private && comments[i].comment_author === user){
+      notes.push(comments[i]);
+    }
+  }
+  console.log(`Notes: ${notes}`);
+  return notes;
+}
 module.exports = function(app) {
   // Load index page
   app.get("/", function(req, res) {
@@ -108,13 +119,18 @@ module.exports = function(app) {
       where: {
         title: req.params.poemTitle,
         author: req.params.poemAuthor
-      }
+      },
+      order: [
+        [{ model: db.Comments, as: 'comments' }, 'createdAt', 'DESC']
+      ]
     }).then(result=>{
-      console.log(result);
+      console.log(`Finished query`);
       let poem = {
+        id: result.id,
         title: result.title,
         author: result.author,
-        body: result.poem_lines,
+        body: result.poem_lines.split("|"),
+        notes: buildNotes(result.comments, req.user.username),
         favorites: result.favorites,
         comments: result.comments,
         ratings: result.ratings,

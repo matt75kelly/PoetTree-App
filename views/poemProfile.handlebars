@@ -3,36 +3,37 @@
     <div class="col-sm-5 poem-title align-items-start">
       <h1 class="poemTitle">{{title}}</h1>
     </div>
-    <div class="col-sm-5 poem-author align-bottom justify-content-center">
+    <div class="col-sm-5 poem-author align-self-center justify-content-center">
         <h3 class="poemAuthor">{{author}}</h3>
     </div>
-    <div class="col poem-rating align-items-end align-self-end justify-content-end">
-        <div class="form-check form-check-inline float-right">
+    <div class="col align-self-center justify-content-end">
+        <div class="form-check form-check-inline float-right poem-rating ">
         <input class="form-check-input position-static" type="radio" name="blankRadio" id="rate1" value="1" aria-label="Rate this poem 1 star">
         </div>
-        <div class="form-check form-check-inline float-right">
+        <div class="form-check form-check-inline float-right poem-rating ">
         <input class="form-check-input position-static" type="radio" name="blankRadio" id="rate2" value="2" aria-label="Rate this poem 2 stars">
         </div>
-        <div class="form-check form-check-inline float-right">
+        <div class="form-check form-check-inline float-right poem-rating ">
         <input class="form-check-input position-static" type="radio" name="blankRadio" id="rate3" value="3" aria-label="Rate this poem 3 stars">
         </div>
-        <div class="form-check form-check-inline float-right">
+        <div class="form-check form-check-inline float-right poem-rating ">
         <input class="form-check-input position-static" type="radio" name="blankRadio" id="rate4" value="4" aria-label="Rate this poem 4 stars">
         </div>
-        <div class="form-check form-check-inline float-right">
+        <div class="form-check form-check-inline float-right poem-rating ">
         <input class="form-check-input position-static" type="radio" name="blankRadio" id="rate5" value="5" aria-label="Rate this poem 5 stars">
         </div>
     </div>
   </div>
   <div class="row">
-      <div class="col-sm-7 poem-body">
-          <p>{{body}}</p>
+      <div class="col-sm-7 poem-body text-center">
+          {{#each body}}
+          <p>{{this}}</p>
+          {{/each}}
+        <button type="button" class="btn btn-success favorite justify-content-center align-self-center">Favorite</button>
       </div>
       <div class="col-sm-5 poem-notes">
-        {{#each comments}}
-            {{#if is_private}}
+        {{#each notes}}
             {{>poem/notes-poemblock}}
-            {{/if}}
         {{/each}}
       </div>
   </div>
@@ -47,7 +48,7 @@
             <textarea class="form-control" id="newCommentBody" rows="5"></textarea>
         </div>
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="isPrivateCheck" value="isPrivate">
+            <input class="form-check-input" type="checkbox" id="isPrivateCheck" value="0">
             <label class="form-check-label" for="inlineCheckbox3">Make this a Private Personal Note for this Poem</label>
         </div>
         <button type="submit" class="btn btn-primary submit" id="comment-submit">Submit</button>
@@ -68,10 +69,11 @@
         let poemTitle = $("#poemTitle").text();
         let poemAuthor = $("#poemAuthor").text();
         $(document).on("click", ".submit", function(){
+            event.preventDefault();
             let newComment = {
-                title: $("#commentTitle").val().trim(),
-                body: $("#commentBody").val().trim(),
-                isPrivate: $("#commentPrivate").val().trim(),
+                title: $("#newCommentTitle").val().trim(),
+                body: $("#newCommentBody").val().trim(),
+                private: $("#isPrivateCheck").is(":checked"),
                 poemID: $(".container").attr("data-poem"),
             };
             console.log(newComment);
@@ -84,6 +86,7 @@
             })
         });
         $(document).on("click", ".rate", function(event){
+            event.preventDefault();
             let rating ={
                 PoemId: $(".container").attr("data-poem"),
                 rating: $(this).val()
@@ -95,6 +98,20 @@
             }).then(result=>{
                 console.log(result);
             });
+        });
+        $(document).on("click", ".favorite", function(event){
+            event.preventDefault();
+            let poemInfo = {
+                poem_title: $(".poemTitle").text(),
+                poem_author: $(".poemAuthor").text()
+            };
+            $.ajax({
+                url:"/api/favorite",
+                method: "POST",
+                data: poemInfo
+            }).then(result=>{
+                console.log(result);
+            })
         })
     });
 </script>
